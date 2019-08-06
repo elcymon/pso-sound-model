@@ -10,11 +10,12 @@ particleDimensionBound = pd.DataFrame([[0,-2,0,0],[2000,2,100,1]],index=['min','
 distanceIntensityDF = pd.read_csv('distance-soundIntensity-data.csv')
 columns = ['a0','alpha','ae','sigma']
 
-def computeIntensity(a0,alpha,d,ae,mu,sigma):
-    return (a0 * np.exp(-alpha * d) + ae) * (1 - random.gauss(mu,sigma))
+def computeIntensity(a0,alpha,d,ae,sigma):
+    return (a0 * np.exp(-alpha * d) + ae) * (1 - random.gauss(0,sigma))
 
-def computeFitness(a0,alpha,distanceIntensityDF,ae,mu,sigma):
-    particleIntensityComputation = computeIntensity(a0,alpha,distanceIntensityDF['distance'],ae,mu,sigma)
+def computeFitness(x,distanceIntensityDF):
+    a0,alpha,ae,sigma = x
+    particleIntensityComputation = computeIntensity(a0,alpha,distanceIntensityDF['distance'],ae,sigma)
     errors = distanceIntensityDF['soundIntensity'] - particleIntensityComputation
     squareErrors = errors**2
     
@@ -32,7 +33,7 @@ def generateParticles(population,particleDimensionBound,columns=['a0','alpha','a
 def generateParticlesTuple(population,particleDimensionBound):
     pDim = particleDimensionBound
     
-    df = pd.DataFrame(columns = ['xi','fitness','personalBest','personalBestFitness','bestNeighbour'],index=np.arange(population))
+    df = pd.DataFrame(columns = ['xi','fitness','personalBest','personalBestFitness','indexOfBestNeighbour',],index=np.arange(population))
     df['xi'] = [(np.random.uniform(pDim.loc['min','a0'],pDim.loc['max','a0']),\
                   np.random.uniform(pDim.loc['min','alpha'],pDim.loc['max','alpha']),\
                   np.random.uniform(pDim.loc['min','ae'],pDim.loc['max','ae']),\
@@ -41,12 +42,12 @@ def generateParticlesTuple(population,particleDimensionBound):
     
 def psoSteps(population,particleDimensionBound,velocityBound,columns,distanceIntensityDF):
     #generate particles
-#    particlesDF = generateParticles(population,particleDimensionBound,columns)
-#    
-#    particlesDF['fitness'] = particlesDF.apply(lambda x: computeFitness(x['a0'],x['alpha'],distanceIntensityDF,x['ae'],0,x['sigma']),axis=1)
     particlesDF = generateParticlesTuple(population,particleDimensionBound)
     particlesDF['fitness'] = particlesDF.apply(lambda x: computeFitness(x['xi'],distanceIntensityDF),axis=1)
-    
+    particlesDF['personalBest'] = particlesDF['xi']
+    particlesDF['personalBestFitness'] = particlesDF['fitness']
+    globalBest = particlesDF.loc[particlesDF['personalBestFitness'] == particlesDF['personalBestFitness'].min(),:]
+    particlesDF['indexOfBestNeighbour'] = globalBest.index[0]
     return particlesDF
 #    maxNumOfIterations = 100
 #    numOfIterations = 0
