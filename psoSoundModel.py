@@ -110,7 +110,7 @@ def psoSteps(population,particleDimensionBound,velocityBound,columns,distanceInt
         particlesDF['prevVelocity'] = particlesDF.apply(lambda x: computeVelocity(x,particlesDF.loc[x['indexOfBestNeighbour'],'personalBest'],velocityBound),axis=1)
         particlesDF['xi'] = particlesDF.apply(lambda x: particleStep(x,particleDimensionBound),axis=1)
         print('{}/{}: {}'.format(itCount,100,gBestDF['fitness'].iloc[-1]))
-    gBest['fitness'].plot()
+    gBestDF['fitness'].plot()
     f,ax = plt.subplots()
     distanceIntensityDF.plot(x='distance',y='soundIntensity',ax=ax,label='rawData')
     a0,alpha,ae,sigma = gBestDF['personalBest'].tail(1).iloc[0]
