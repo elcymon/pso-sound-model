@@ -120,7 +120,7 @@ def psoSteps(population,particleDimensionBound,velocityBound,columns,distanceInt
     ax.plot(distanceIntensityDF['distance'],gBestIntensities,label='gBest')
     plt.title('({:.2f} * exp(-{:.2f} * d) + {:.2f}) * (1 - rand(0,{:.2f}))'.format(a0,alpha,ae,sigma))
     plt.legend()
-    
+    plt.show()
     return particlesDF,gBestDF
 #    maxNumOfIterations = 100
 #    numOfIterations = 0
